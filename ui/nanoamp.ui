@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>nanoAmp</class>
+ <widget class="QMainWindow" name="nanoAmp">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1256</width>
+    <height>758</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>nanoAmp</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QTextBrowser" name="textBrowser_src_1">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>460</y>
+      <width>871</width>
+      <height>221</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>20</y>
+      <width>1181</width>
+      <height>371</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Bx</string>
+    </property>
+    <widget class="QPushButton" name="btn_reset_src_0">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>100</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>reset</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_connect_src_1">
+     <property name="geometry">
+      <rect>
+       <x>910</x>
+       <y>100</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>connect </string>
+     </property>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_src_0">
+     <property name="geometry">
+      <rect>
+       <x>299</x>
+       <y>150</y>
+       <width>261</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>GroupBox</string>
+     </property>
+     <widget class="QRadioButton" name="rbtn_unit_ma_src_0">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>30</y>
+        <width>51</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>[mA]</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="rbtn_unit_na_src_0">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>30</y>
+        <width>51</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>[nA]</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="rbtn_unit_ua_src_0">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>30</y>
+        <width>51</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>[uA]</string>
+      </property>
+     </widget>
+     <zorder>rbtn_unit_ma_src_0</zorder>
+     <zorder>rbtn_unit_na_src_0</zorder>
+     <zorder>rbtn_unit_ua_src_0</zorder>
+     <zorder>btn_connect_src_0</zorder>
+     <zorder>btn_connect_src_0</zorder>
+    </widget>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>47</width>
+       <height>13</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>SRC 1</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="spinBox_current_level_src_1">
+     <property name="geometry">
+      <rect>
+       <x>840</x>
+       <y>200</y>
+       <width>62</width>
+       <height>22</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_status_src_0">
+     <property name="geometry">
+      <rect>
+       <x>470</x>
+       <y>100</y>
+       <width>20</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>../img/red_dot.png</pixmap>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_disconnect_src_1">
+     <property name="geometry">
+      <rect>
+       <x>1000</x>
+       <y>100</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>disconnect</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBox">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>20</y>
+       <width>221</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>bipolar medium: -20...20 mA, res : 76 nA</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QPushButton" name="btn_connect_src_0">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>100</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>connect </string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_current_level_src_0">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>150</y>
+       <width>181</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>query current level</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_error_src_0">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>100</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>query error</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>640</x>
+       <y>50</y>
+       <width>47</width>
+       <height>13</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>SRC 1</string>
+     </property>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_src_1">
+     <property name="geometry">
+      <rect>
+       <x>910</x>
+       <y>150</y>
+       <width>261</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>GroupBox</string>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
+     </property>
+     <widget class="QRadioButton" name="rbtn_unit_ma_src_1">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>30</y>
+        <width>51</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>[mA]</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="rbtn_unit_na_src_1">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>30</y>
+        <width>51</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>[nA]</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="rbtn_unit_ua_src_1">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>30</y>
+        <width>51</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>[uA]</string>
+      </property>
+     </widget>
+     <zorder>rbtn_unit_ma_src_1</zorder>
+     <zorder>rbtn_unit_na_src_1</zorder>
+     <zorder>rbtn_unit_ua_src_1</zorder>
+     <zorder>btn_connect_src_1</zorder>
+    </widget>
+    <widget class="QPushButton" name="btn_idn_src_1">
+     <property name="geometry">
+      <rect>
+       <x>820</x>
+       <y>100</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>IDN</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_disconnect_src_0">
+     <property name="geometry">
+      <rect>
+       <x>370</x>
+       <y>100</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>disconnect</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_error_src_1">
+     <property name="geometry">
+      <rect>
+       <x>730</x>
+       <y>100</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>query error</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_reset_src_1">
+     <property name="geometry">
+      <rect>
+       <x>640</x>
+       <y>100</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>reset</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="spinBox_current_level_src_0">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>200</y>
+       <width>62</width>
+       <height>22</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_idn_src_0">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>100</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>IDN</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="spinBox_stepsize_src_0">
+     <property name="geometry">
+      <rect>
+       <x>370</x>
+       <y>240</y>
+       <width>42</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_current_level_src_1">
+     <property name="geometry">
+      <rect>
+       <x>640</x>
+       <y>150</y>
+       <width>181</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>query current level</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_status_src_1">
+     <property name="geometry">
+      <rect>
+       <x>1100</x>
+       <y>100</y>
+       <width>20</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>../img/red_dot.png</pixmap>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="spinBox_stepsize_src_1">
+     <property name="geometry">
+      <rect>
+       <x>930</x>
+       <y>240</y>
+       <width>42</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1256</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>
