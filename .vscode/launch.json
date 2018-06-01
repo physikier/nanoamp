@@ -5,6 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "nanoamp web app",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/nanoamp_web.py"
+        },
+        {
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",

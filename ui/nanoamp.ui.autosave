@@ -367,8 +367,8 @@
     <widget class="QDoubleSpinBox" name="spinBox_current_level_src_0">
      <property name="geometry">
       <rect>
-       <x>220</x>
-       <y>200</y>
+       <x>240</x>
+       <y>180</y>
        <width>62</width>
        <height>22</height>
       </rect>
@@ -442,35 +442,6 @@
       <number>1</number>
      </property>
     </widget>
-    <zorder>btn_reset_src_0</zorder>
-    <zorder>btn_connect_src_1</zorder>
-    <zorder>groupBox_src_0</zorder>
-    <zorder>label</zorder>
-    <zorder>spinBox_current_level_src_1</zorder>
-    <zorder>label_status_src_0</zorder>
-    <zorder>btn_disconnect_src_1</zorder>
-    <zorder>comboBox</zorder>
-    <zorder>btn_connect_src_0</zorder>
-    <zorder>btn_current_level_src_0</zorder>
-    <zorder>btn_error_src_0</zorder>
-    <zorder>label_2</zorder>
-    <zorder>groupBox_src_1</zorder>
-    <zorder>btn_idn_src_1</zorder>
-    <zorder>btn_disconnect_src_0</zorder>
-    <zorder>btn_error_src_1</zorder>
-    <zorder>btn_reset_src_1</zorder>
-    <zorder>spinBox_current_level_src_0</zorder>
-    <zorder>btn_idn_src_0</zorder>
-    <zorder>spinBox_stepsize_src_0</zorder>
-    <zorder>btn_current_level_src_1</zorder>
-    <zorder>label_status_src_1</zorder>
-    <zorder>spinBox_stepsize_src_1</zorder>
-    <zorder>rbtn_unit_na_src_0</zorder>
-    <zorder>rbtn_unit_ua_src_0</zorder>
-    <zorder>rbtn_unit_ma_src_0</zorder>
-    <zorder>rbtn_unit_na_src_1</zorder>
-    <zorder>rbtn_unit_ua_src_1</zorder>
-    <zorder>rbtn_unit_ma_src_1</zorder>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">

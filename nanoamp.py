@@ -16,9 +16,22 @@ class NanoAmp(QtWidgets.QMainWindow):
 		uic.loadUi("./ui/nanoamp.ui", self)
 		self.MainWindow = QtWidgets.QMainWindow(self)
 		self.connect_ui_elements()
+		self.create_radio_dicts()
 		self.show()
 	
+	def create_radio_dicts(self):
+		self.radio_groups
+		for i in range(len(self.devices)):
+			radio_dict = {
+				'mA': getattr(self, 'rbtn_unit_ma_src_' + str(i)),
+				'uA': getattr(self, 'rbtn_unit_ua_src_' + str(i)),
+				'nA': getattr(self, 'rbtn_unit_na_src_' + str(i))
+			}
+			self.radio_groups.append(radio_dict)
+
 	def connect_ui_elements(self):
+
+		#Closures
 		def connect_button_action(device_number):
 			return lambda: self.connect_hardware(self.get_hardware_board(device_number))
 
@@ -54,6 +67,7 @@ class NanoAmp(QtWidgets.QMainWindow):
 			getattr(self, 'btn_current_level_src_' + str(i)).clicked.connect(get_current_level_button_action(i))
 			getattr(self, 'spinBox_current_level_src_' + str(i)).valueChanged.connect(set_current_level_spinbox_action(i))
 			getattr(self, 'spinBox_stepsize_src_' + str(i)).valueChanged.connect(set_stepsize_spinbox_action(i))
+			getattr(self, 'rbtn_unit_ua_src_' + str(i))
 
 	def __del__(self):
 		for hardware_board in self.hardware_boards.values():
