@@ -15,12 +15,24 @@ class ArduinoLeonardo():
 		# self.instr.timeout=50000
 		self.instr.read_termination = '\n'
 
-		
-
 	# --------------------------------------------------------------------------
 	def __del__(self):
 		if hasattr(self, 'instr'):
 			self.instr.close()
+
+	def is_connected(self):
+		try:
+			session = self.instr.session
+			return True
+		except:
+			return False
+	
+	def get_session(self):
+		try:
+			session = self.instr.session
+			return session
+		except:
+			return None
 
 	# --------------------------------------------------------------------------
 	def disconnect(self):

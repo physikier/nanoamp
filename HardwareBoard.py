@@ -16,6 +16,12 @@ class HardwareBoard():
 			return self.hardware.disconnect()
 		else:
 			return True
+	
+	def is_connected(self):
+		if hasattr(self, 'hardware') and self.hardware.is_connected():
+			return True
+		else:
+			return False
 
 	def get_hardware(self):
 		return self.hardware

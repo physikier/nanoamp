@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import BACKEND_API from './apiConfig';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import './App.css';
@@ -7,11 +8,17 @@ import './App.css';
 class App extends Component {
   constructor() {
     super();
+    console.log(BACKEND_API);
 
     this.state = {
-      visaAddress: 'ASRL8::INSTR',
       hasError: false,
       errorMsg: '',
+      // devices is an array of objects
+      // devices: {
+      //   visaAddress: 'ABC123',
+      //   connected: false,
+      // }
+      devices: []
     };
   }
 
@@ -24,15 +31,41 @@ class App extends Component {
   connect(visaAddress) {
     console.log('connect to ' + visaAddress);
 
-    axios.post('http://localhost:5000/connect', {
-      visaAddress: visaAddress
+    axios.post(BACKEND_API + '/connect', {
+      visaAddress: visaAddress,
     })
     .then(response => {
-      console.log(response.data.returnValue);
+      this.state.devices.push({
+        visaAddress: response.data.visaAddress,
+        connected: true,
+      });
+      this.setState({
+        devices: this.state.devices,
+      });
     })
     .catch(error => {
-      this.showError(error.toString());
+      this.showError(error.response.data || error.toString());
+    });
+  }
+
+  disconnect(visaAddress) {
+    console.log('disconnect from ' + visaAddress);
+
+    axios.post(BACKEND_API + '/disconnect', {
+      visaAddress: visaAddress,
     })
+    .then(response => {
+      this.state.devices.push({
+        visaAddress: response.data.visaAddress,
+        connected: false,
+      });
+      this.setState({
+        devices: this.state.devices,
+      });
+    })
+    .catch(error => {
+      this.showError(error.response.data || error.toString());
+    });
   }
 
   showError = errorMsg => {
@@ -45,8 +78,34 @@ class App extends Component {
           hasError: false,
           errorMsg: '',
         });
-      }, 5000);
+      }, 7500);
     });
+  }
+
+  renderButton = () => {
+    if (this.state.connected) {
+      // render disconnect button
+      return (
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={() => this.disconnect(this.state.visaAddress)}
+        >
+          Disconnect
+        </Button>
+      );
+    } else {
+      return (
+        // render connect button
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={() => this.connect(this.state.visaAddress)}
+        >
+          Connect to {this.state.visaAddress}
+        </Button>
+      );
+    }
   }
 
   render() {
@@ -64,13 +123,7 @@ class App extends Component {
           onChange={this.handleChange}
           margin="normal"
         />
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={() => this.connect(this.state.visaAddress)}
-        >
-          Connect to {this.state.visaAddress}
-        </Button>
+        {this.renderButton()}
       </div>
     );
   }
