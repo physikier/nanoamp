@@ -43,11 +43,11 @@ class DeviceAdder extends Component {
         if (addDevice) {
             if (this.state.leftDeviceAddress) {
                 const leftDeviceName = this.state.leftDeviceName || 'Default left device name';
-                addDevice(leftDeviceName, this.state.leftDeviceAddress);
+                addDevice(leftDeviceName, this.state.leftDeviceAddress, this.state.rightDeviceAddress);
             }
             if (this.state.rightDeviceAddress) {
                 const rightDeviceName = this.state.rightDeviceName || 'Default right device name';
-                addDevice(rightDeviceName, this.state.rightDeviceAddress);
+                addDevice(rightDeviceName, this.state.rightDeviceAddress, this.state.leftDeviceAddress);
             }
         }
         this.setState({open: false});
@@ -124,8 +124,8 @@ class DeviceAdder extends Component {
                                     label="Right Device Address"
                                     type="text"
                                     fullWidth
-                                    value={this.state.rightDeviceName}
-                                    onChange={(event) => this.setState({rightDeviceName: event.target.value})}
+                                    value={this.state.rightDeviceAddress}
+                                    onChange={(event) => this.setState({rightDeviceAddress: event.target.value})}
                                 />
                             </Grid>
                         </Grid>

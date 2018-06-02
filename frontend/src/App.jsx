@@ -9,32 +9,48 @@ class App extends Component {
   state = {
     hasError: false,
     errorMsg: '',
-    // devices is an array of objects
-    // devices: {
-    //   visaAddress: 'ABC123',
-    //   connected: false,
-    // }
-    devices: []
+    devices: [],
   };
 
-  addDevice = (deviceName, deviceAddress) => {
-    this.state.devices.push({
-      name: deviceName,
+  addDevice = (deviceName, deviceAddress, linkedDeviceAddress = null) => {
+    axios.post(BACKEND_API + '/add-device', {
       address: deviceAddress,
-      connected: false, 
+    })
+    .then(response => {
+      const device = {
+        name: deviceName,
+        address: deviceAddress,
+        connected: false, 
+      };
+
+      if (linkedDeviceAddress) {
+        const linkedDevice = this.state.devices.filter(device => {
+          device.name === linkedDeviceAddress
+        });
+        if (linkedDevice.length > 0) {
+          device.linkedDevice = linkedDevice[0];
+          linkedDevice[0].linkedDevice = device;
+        }
+      }
+
+      this.state.devices.push(device);
+      this.setState({ devices: this.state.devices });
+    })
+    .catch(error => {
+      const errorMsg = error && error.response && error.response.data;
+      this.showError(errorMsg || error.toString());
     });
-    this.setState({ devices: this.state.devices });
   }
 
-  connect(visaAddress) {
-    console.log('connect to ' + visaAddress);
+  connect(deviceAddress) {
+    console.log('connect to ' + deviceAddress);
 
     axios.post(BACKEND_API + '/connect', {
-      visaAddress: visaAddress,
+      address: deviceAddress,
     })
     .then(response => {
       this.state.devices.push({
-        visaAddress: response.data.visaAddress,
+        address: response.data.address,
         connected: true,
       });
       this.setState({
@@ -42,19 +58,20 @@ class App extends Component {
       });
     })
     .catch(error => {
-      this.showError(error.response.data || error.toString());
+      const errorMsg = error && error.response && error.response.data;
+      this.showError(errorMsg || error.toString());
     });
   }
 
-  disconnect(visaAddress) {
-    console.log('disconnect from ' + visaAddress);
+  disconnect(deviceAddress) {
+    console.log('disconnect from ' + deviceAddress);
 
     axios.post(BACKEND_API + '/disconnect', {
-      visaAddress: visaAddress,
+      address: deviceAddress,
     })
     .then(response => {
       this.state.devices.push({
-        visaAddress: response.data.visaAddress,
+        address: response.data.address,
         connected: false,
       });
       this.setState({
@@ -62,7 +79,8 @@ class App extends Component {
       });
     })
     .catch(error => {
-      this.showError(error.response.data || error.toString());
+      const errorMsg = error && error.response && error.response.data;
+      this.showError(errorMsg || error.toString());
     });
   }
 

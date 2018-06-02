@@ -17,27 +17,47 @@ default_devices = {
 def get_default_devices():
     return jsonify(default_devices)
 
+@app.route("/add-device", methods=['POST'])
+def add_device():
+    visa_address = request.get_json()['address']
+    if hardware_boards.get(visa_address):
+        return 'Address already registered', 400
+
+    hardware_board = HardwareBoard(visa_address=visa_address)
+    hardware_boards[visa_address] = hardware_board
+    return jsonify({ 'address': visa_address })
+
+@app.route("/remove-device", methods=['POST'])
+def remove_device():
+    visa_address = request.get_json()['address']
+    if not hardware_boards.get(visa_address):
+        return 'No device with this address ' + visa_address, 400
+
+    del hardware_boards[visa_address]
+    return jsonify({ 'address': visa_address })
+
 @app.route("/connect", methods=['POST'])
 def connect():
-    visa_address = request.get_json()['visaAddress']
-    hardware_board = HardwareBoard(visa_address=visa_address)
+    visa_address = request.get_json()['address']
+    hardware_board = hardware_boards.get(visa_address)
+    if not hardware_board:
+        return 'No device with this address ' + visa_address, 400
+
     hardware_board.connect()
     if hardware_board.is_connected():
-        hardware_boards[visa_address] = hardware_board
-        return jsonify({ 'visaAddress': visa_address })
+        return jsonify({ 'address': visa_address })
     else:
         return 'Invalid visa address', 400
 
 @app.route("/disconnect", methods=['POST'])
 def disconnect():
-    visa_address = request.get_json()['visaAddress']
-    hardware_board = hardware_boards[visa_address]
+    visa_address = request.get_json()['address']
+    hardware_board = hardware_boards.get(visa_address)
     if hardware_board:
         hardware_board.disconnect()
-        del hardware_board[visa_address]
-        return jsonify({ 'visaAddress': visa_address })
+        return jsonify({ 'address': visa_address })
     else:
-        return 'Could not find hardware board for visa address ' + visa_address, 400
+        return 'No device with this address ' + visa_address, 400
 
 if __name__ == "__main__":
     app.run()

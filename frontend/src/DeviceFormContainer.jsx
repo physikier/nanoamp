@@ -9,7 +9,7 @@ class DeviceFormContainer extends Component {
                 <ul>
                     {devices.map((device) => {
                         return (
-                            <li>{device.name}</li>
+                            <li key={device.address}>{device.name} | {device.address}</li>
                         );
                     })}
                 </ul>
