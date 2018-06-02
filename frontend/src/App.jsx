@@ -2,22 +2,28 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import BACKEND_API from './apiConfig';
 import DeviceAdder from './DeviceAdder';
+import DeviceFormContainer from './DeviceFormContainer';
 import './App.css';
 
 class App extends Component {
-  constructor() {
-    super();
+  state = {
+    hasError: false,
+    errorMsg: '',
+    // devices is an array of objects
+    // devices: {
+    //   visaAddress: 'ABC123',
+    //   connected: false,
+    // }
+    devices: []
+  };
 
-    this.state = {
-      hasError: false,
-      errorMsg: '',
-      // devices is an array of objects
-      // devices: {
-      //   visaAddress: 'ABC123',
-      //   connected: false,
-      // }
-      devices: []
-    };
+  addDevice = (deviceName, deviceAddress) => {
+    this.state.devices.push({
+      name: deviceName,
+      address: deviceAddress,
+      connected: false, 
+    });
+    this.setState({ devices: this.state.devices });
   }
 
   connect(visaAddress) {
@@ -82,7 +88,8 @@ class App extends Component {
             {this.state.errorMsg}
           </div>
         }
-        <DeviceAdder connect={this.connect} />
+        <DeviceAdder addDevice={this.addDevice} />
+        <DeviceFormContainer devices={this.state.devices} />
       </div>
     );
   }
