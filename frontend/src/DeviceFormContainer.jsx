@@ -1,25 +1,29 @@
 import React, { Component } from 'react';
+import DeviceForm from './DeviceForm';
 
 class DeviceFormContainer extends Component {
-    render() {
-        const { devices } = this.props;
+  render() {
+    const {
+      devices,
+      connect,
+      disconnect,
+    } = this.props;
 
-        if (devices && devices.length && devices.length > 0) {
-            return (
-                <ul>
-                    {devices.map((device) => {
-                        return (
-                            <li key={device.address}>{device.name} | {device.address}</li>
-                        );
-                    })}
-                </ul>
-            );
-        } else {
-            return (
-                <p>No devices yet :'(</p>
-            );
-        }
+    if (devices && devices.length && devices.length > 0) {
+      return devices.map((device) => (
+        <DeviceForm
+          key={device.address}
+          device={device}
+          connect={connect}
+          disconnect={disconnect}
+          />
+      ));
+    } else {
+      return (
+        <p>No devices yet :'(</p>
+      );
     }
+  }
 }
 
 export default DeviceFormContainer;

@@ -12,9 +12,40 @@ class App extends Component {
     devices: [],
   };
 
+  componentWillMount() {
+    this.getDevices();
+  }
+
+  getDevices = () => {
+    axios.get(BACKEND_API + '/get-devices')
+    .then(response => {
+      if (response.data && response.data.length > 0) {
+        response.data.forEach(device => {
+          this.state.devices.push({
+            name: device.name || 'Default name',
+            address: device.address || 'ERR_NO_ADDRESS',
+            connected: device.connected || false,
+          });
+        });
+        this.setState({ devices: this.state.devices });
+      }
+    })
+    .catch(error => {
+      const errorMsg = error && error.response && error.response.data;
+      this.showError(errorMsg || error.toString());
+    });
+  }
+
   addDevice = (deviceName, deviceAddress, linkedDeviceAddress = null) => {
+    const sameDevice = this.state.devices.filter(device => device.address === deviceAddress);
+    if (sameDevice.length > 0) {
+      this.showError('Device with address "' + deviceAddress + '" already exists!');
+      return;
+    }
+
     axios.post(BACKEND_API + '/add-device', {
       address: deviceAddress,
+      name: deviceName,
     })
     .then(response => {
       const device = {
@@ -25,7 +56,7 @@ class App extends Component {
 
       if (linkedDeviceAddress) {
         const linkedDevice = this.state.devices.filter(device => {
-          device.name === linkedDeviceAddress
+          return device.address === linkedDeviceAddress
         });
         if (linkedDevice.length > 0) {
           device.linkedDevice = linkedDevice[0];
@@ -42,20 +73,19 @@ class App extends Component {
     });
   }
 
-  connect(deviceAddress) {
-    console.log('connect to ' + deviceAddress);
+  connect = deviceAddress => {
+    const device = this.state.devices.filter(device => device.address === deviceAddress);
+    if (device.length < 1) {
+      this.showError('No device with address "' + deviceAddress + '" found!');
+      return;
+    }
 
     axios.post(BACKEND_API + '/connect', {
       address: deviceAddress,
     })
     .then(response => {
-      this.state.devices.push({
-        address: response.data.address,
-        connected: true,
-      });
-      this.setState({
-        devices: this.state.devices,
-      });
+      device[0].connected = true;
+      this.setState({ devices: this.state.devices });
     })
     .catch(error => {
       const errorMsg = error && error.response && error.response.data;
@@ -63,20 +93,19 @@ class App extends Component {
     });
   }
 
-  disconnect(deviceAddress) {
-    console.log('disconnect from ' + deviceAddress);
+  disconnect = deviceAddress => {
+    const device = this.state.devices.filter(device => device.address === deviceAddress);
+    if (device.length < 1) {
+      this.showError('No device with address "' + deviceAddress + '" found!');
+      return;
+    }
 
     axios.post(BACKEND_API + '/disconnect', {
       address: deviceAddress,
     })
     .then(response => {
-      this.state.devices.push({
-        address: response.data.address,
-        connected: false,
-      });
-      this.setState({
-        devices: this.state.devices,
-      });
+      device[0].connected = false;
+      this.setState({ devices: this.state.devices });
     })
     .catch(error => {
       const errorMsg = error && error.response && error.response.data;
@@ -107,7 +136,11 @@ class App extends Component {
           </div>
         }
         <DeviceAdder addDevice={this.addDevice} />
-        <DeviceFormContainer devices={this.state.devices} />
+        <DeviceFormContainer
+          devices={this.state.devices}
+          connect={this.connect}
+          disconnect={this.disconnect}
+        />
       </div>
     );
   }

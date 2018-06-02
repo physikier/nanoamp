@@ -1,8 +1,9 @@
 from hardware.arduino_leonardo import ArduinoLeonardo
 
 class HardwareBoard():
-	def __init__(self, visa_address):
+	def __init__(self, visa_address, name):
 		self.visa_address = visa_address
+		self.name = name or ''
 
 	def connect(self):
 		try:
@@ -28,6 +29,12 @@ class HardwareBoard():
 
 	def get_visa_address(self):
 		return self.visa_address
+	
+	def get_name(self):
+		return self.name
+	
+	def set_name(self, name):
+		self.name = name or ''
 	
 	def get_idn_info(self):
 		try:
