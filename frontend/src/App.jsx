@@ -9,11 +9,34 @@ class App extends Component {
   state = {
     hasError: false,
     errorMsg: '',
+    // devices is the array that holds all information of the devices
+    // device = {
+    //   name: 'device name',
+    //   address: 'device address',
+    //   connected: false,
+    //   linkedDevice: {object to linked device}
+    // }
     devices: [],
+    defaultDeviceNames: {},
   };
 
   componentWillMount() {
     this.getDevices();
+    this.getDefaultDeviceNames();
+  }
+
+  getDefaultDeviceNames = () => {
+    axios.get(BACKEND_API + '/get-default-device-names')
+    .then(response => {
+      if (response.data) {
+        this.setState({ defaultDeviceNames: response.data });
+      }
+    })
+    .catch(error => {
+      const errorMsg = error && error.response && error.response.data;
+      this.showError(errorMsg || error.toString());
+    });
+
   }
 
   getDevices = () => {
@@ -135,7 +158,10 @@ class App extends Component {
             {this.state.errorMsg}
           </div>
         }
-        <DeviceAdder addDevice={this.addDevice} />
+        <DeviceAdder
+          addDevice={this.addDevice}
+          defaultDevices={this.state.defaultDeviceNames}
+        />
         <DeviceFormContainer
           devices={this.state.devices}
           connect={this.connect}

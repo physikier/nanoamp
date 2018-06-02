@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -8,6 +7,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import TextFieldAutocomplete from './TextFieldAutocomplete';
+import './DeviceAdder.css';
 
 class DeviceAdder extends Component {
     state = {
@@ -22,14 +23,6 @@ class DeviceAdder extends Component {
         this.setState({
             open: true,
         });
-
-        // <TextField
-        //   id="visaAddress"
-        //   label="Visa Address"
-        //   value={this.state.visaAddress}
-        //   onChange={this.handleChange}
-        //   margin="normal"
-        // />
     }
 
     closeDialog = () => {
@@ -54,6 +47,20 @@ class DeviceAdder extends Component {
     }
 
     render() {
+        const { defaultDevices } = this.props;
+        let defaultDeviceAddresses = [];
+        let defaultDeviceNames = [];
+        if (defaultDevices && Object.keys(defaultDevices).length > 0) {
+            defaultDeviceAddresses = Object.keys(defaultDevices).map(suggestion => ({
+                value: suggestion,
+                label: suggestion,
+            }));
+            defaultDeviceNames = Object.values(defaultDevices).map(suggestion => ({
+                value: suggestion,
+                label: suggestion,
+            }));
+        }
+
         return (
             <div>
                 <Button
@@ -67,9 +74,10 @@ class DeviceAdder extends Component {
                     open={this.state.open}
                     onClose={this.closeDialog}
                     aria-labelledby="form-dialog-title"
+                    className={'DeviceAdderDialog'}
                 >
                     <DialogTitle id="form-dialog-title">Add Device</DialogTitle>
-                    <DialogContent>
+                    <DialogContent className={'DeviceAdderDialogContainer'}>
                         <DialogContentText>
                             To add a device just choose one from the suggestions or insert your own device data.
                             Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
@@ -80,25 +88,33 @@ class DeviceAdder extends Component {
                         </Typography>
                         <Grid container spacing={32}>
                             <Grid item xs={7}>
-                                <TextField
-                                    margin="dense"
-                                    id="name"
-                                    label="Left Device Name"
-                                    type="text"
+                                <TextFieldAutocomplete
                                     fullWidth
-                                    value={this.state.leftDeviceName}
-                                    onChange={(event) => this.setState({leftDeviceName: event.target.value})}
+                                    value={{
+                                        value: this.state.leftDeviceName,
+                                        label: this.state.leftDeviceName
+                                    }}
+                                    onChange={(elem) => this.setState({
+                                        leftDeviceName: (elem && elem.value) || ''
+                                    })}
+                                    placeholder="Choose a device name"
+                                    label="Left Device Name"
+                                    suggestions={defaultDeviceNames}
                                 />
                             </Grid>
                             <Grid item xs={5}>
-                                <TextField
-                                    margin="dense"
-                                    id="name"
-                                    label="Left Device Address"
-                                    type="text"
+                                <TextFieldAutocomplete
                                     fullWidth
-                                    value={this.state.leftDeviceAddress}
-                                    onChange={(event) => this.setState({leftDeviceAddress: event.target.value})}
+                                    value={{
+                                        value: this.state.leftDeviceAddress,
+                                        label: this.state.leftDeviceAddress
+                                    }}
+                                    onChange={(elem) => this.setState({
+                                        leftDeviceAddress: (elem && elem.value) || ''
+                                    })}
+                                    placeholder="Insert Device Address"
+                                    label="Left Device Address"
+                                    suggestions={defaultDeviceAddresses}
                                 />
                             </Grid>
                         </Grid>
@@ -107,25 +123,33 @@ class DeviceAdder extends Component {
                         </Typography>
                         <Grid container spacing={32}>
                             <Grid item xs={7}>
-                                <TextField
-                                    margin="dense"
-                                    id="name"
-                                    label="Right Device Name"
-                                    type="text"
+                                <TextFieldAutocomplete
                                     fullWidth
-                                    value={this.state.rightDeviceName}
-                                    onChange={(event) => this.setState({rightDeviceName: event.target.value})}
+                                    value={{
+                                        value: this.state.rightDeviceName,
+                                        label: this.state.rightDeviceName
+                                    }}
+                                    onChange={(elem) => this.setState({
+                                        rightDeviceName: (elem && elem.value) || ''
+                                    })}
+                                    placeholder="Choose a device name"
+                                    label="Right Device Name"
+                                    suggestions={defaultDeviceNames}
                                 />
                             </Grid>
                             <Grid item xs={5}>
-                                <TextField
-                                    margin="dense"
-                                    id="name"
-                                    label="Right Device Address"
-                                    type="text"
+                                <TextFieldAutocomplete
                                     fullWidth
-                                    value={this.state.rightDeviceAddress}
-                                    onChange={(event) => this.setState({rightDeviceAddress: event.target.value})}
+                                    value={{
+                                        value: this.state.rightDeviceAddress,
+                                        label: this.state.rightDeviceAddress
+                                    }}
+                                    onChange={(elem) => this.setState({
+                                        rightDeviceAddress: (elem && elem.value) || ''
+                                    })}
+                                    placeholder="Insert Device Address"
+                                    label="Right Device Address"
+                                    suggestions={defaultDeviceAddresses}
                                 />
                             </Grid>
                         </Grid>

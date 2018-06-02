@@ -32,7 +32,7 @@ def get_devices():
 def add_device():
     visa_address = request.get_json().get('address')
     if hardware_boards.get(visa_address):
-        return 'Address already registered', 400
+        return 'Address ' + visa_address + ' already registered', 400
 
     name = request.get_json().get('name')
     hardware_board = HardwareBoard(visa_address=visa_address, name=name)

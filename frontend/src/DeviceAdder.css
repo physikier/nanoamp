@@ -1,0 +1,5 @@
+.DeviceAdderDialog > div,
+.DeviceAdderDialogContainer
+{
+    overflow: visible !important;
+}
