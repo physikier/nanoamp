@@ -1,14 +1,12 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import BACKEND_API from './apiConfig';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import DeviceAdder from './DeviceAdder';
 import './App.css';
 
 class App extends Component {
   constructor() {
     super();
-    console.log(BACKEND_API);
 
     this.state = {
       hasError: false,
@@ -20,12 +18,6 @@ class App extends Component {
       // }
       devices: []
     };
-  }
-
-  handleChange = event => {
-    this.setState({
-      visaAddress: event.target.value
-    });
   }
 
   connect(visaAddress) {
@@ -82,32 +74,6 @@ class App extends Component {
     });
   }
 
-  renderButton = () => {
-    if (this.state.connected) {
-      // render disconnect button
-      return (
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={() => this.disconnect(this.state.visaAddress)}
-        >
-          Disconnect
-        </Button>
-      );
-    } else {
-      return (
-        // render connect button
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={() => this.connect(this.state.visaAddress)}
-        >
-          Connect to {this.state.visaAddress}
-        </Button>
-      );
-    }
-  }
-
   render() {
     return (
       <div className="App">
@@ -116,14 +82,7 @@ class App extends Component {
             {this.state.errorMsg}
           </div>
         }
-        <TextField
-          id="visaAddress"
-          label="Visa Address"
-          value={this.state.visaAddress}
-          onChange={this.handleChange}
-          margin="normal"
-        />
-        {this.renderButton()}
+        <DeviceAdder connect={this.connect} />
       </div>
     );
   }
