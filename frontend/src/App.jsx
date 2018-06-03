@@ -160,6 +160,7 @@ class App extends Component {
         }
         <DeviceAdder
           addDevice={this.addDevice}
+          devices={this.state.devices}
           defaultDevices={this.state.defaultDeviceNames}
         />
         <DeviceFormContainer

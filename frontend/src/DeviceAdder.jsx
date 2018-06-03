@@ -46,21 +46,51 @@ class DeviceAdder extends Component {
         this.setState({open: false});
     }
 
-    render() {
+    getNameSuggestions = () => {
         const { defaultDevices } = this.props;
-        let defaultDeviceAddresses = [];
-        let defaultDeviceNames = [];
-        if (defaultDevices && Object.keys(defaultDevices).length > 0) {
-            defaultDeviceAddresses = Object.keys(defaultDevices).map(suggestion => ({
-                value: suggestion,
-                label: suggestion,
-            }));
-            defaultDeviceNames = Object.values(defaultDevices).map(suggestion => ({
-                value: suggestion,
-                label: suggestion,
-            }));
+        if (!defaultDevices) {
+            return [];
         }
 
+        const alreadyUsedDeviceNames = 
+            this.props.devices ?
+            this.props.devices.map(device => device.name):
+            [];
+
+        const nameSuggestionsNotInDevices = Object.values(defaultDevices).filter(suggestion => {
+            return !alreadyUsedDeviceNames.includes(suggestion);
+        });
+
+        if (!nameSuggestionsNotInDevices) return [];
+        return nameSuggestionsNotInDevices.map(suggestion => ({
+            value: suggestion,
+            label: suggestion,
+        }));
+    }
+
+    getAddressSuggestions = (device) => {
+        const { defaultDevices } = this.props;
+        if (!defaultDevices) {
+            return [];
+        }
+        
+        const alreadyUsedDeviceAddresses = 
+            this.props.devices ?
+            this.props.devices.map(device => device.address):
+            [];
+
+        const addressSuggestionsNotInDevices = Object.keys(defaultDevices).filter(suggestion => {
+            return !alreadyUsedDeviceAddresses.includes(suggestion);
+        });
+
+        if (!addressSuggestionsNotInDevices) return [];
+        return addressSuggestionsNotInDevices.map(suggestion => ({
+            value: suggestion,
+            label: suggestion,
+        }));
+    }
+
+    render() {
         return (
             <div>
                 <Button
@@ -98,8 +128,8 @@ class DeviceAdder extends Component {
                                         leftDeviceName: (elem && elem.value) || ''
                                     })}
                                     placeholder="Choose a device name"
-                                    label="Left Device Name"
-                                    suggestions={defaultDeviceNames}
+                                    label="Name"
+                                    suggestions={this.getNameSuggestions()}
                                 />
                             </Grid>
                             <Grid item xs={5}>
@@ -113,8 +143,8 @@ class DeviceAdder extends Component {
                                         leftDeviceAddress: (elem && elem.value) || ''
                                     })}
                                     placeholder="Insert Device Address"
-                                    label="Left Device Address"
-                                    suggestions={defaultDeviceAddresses}
+                                    label="Address"
+                                    suggestions={this.getAddressSuggestions()}
                                 />
                             </Grid>
                         </Grid>
@@ -133,8 +163,8 @@ class DeviceAdder extends Component {
                                         rightDeviceName: (elem && elem.value) || ''
                                     })}
                                     placeholder="Choose a device name"
-                                    label="Right Device Name"
-                                    suggestions={defaultDeviceNames}
+                                    label="Name"
+                                    suggestions={this.getNameSuggestions()}
                                 />
                             </Grid>
                             <Grid item xs={5}>
@@ -148,8 +178,8 @@ class DeviceAdder extends Component {
                                         rightDeviceAddress: (elem && elem.value) || ''
                                     })}
                                     placeholder="Insert Device Address"
-                                    label="Right Device Address"
-                                    suggestions={defaultDeviceAddresses}
+                                    label="Address"
+                                    suggestions={this.getAddressSuggestions()}
                                 />
                             </Grid>
                         </Grid>
