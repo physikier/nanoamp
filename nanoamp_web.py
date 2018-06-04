@@ -72,4 +72,4 @@ def disconnect():
         return 'No device with this address ' + visa_address, 400
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
