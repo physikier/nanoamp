@@ -1,33 +1,110 @@
 import React, { Component } from 'react';
-// import { InputProps } from '@material-ui/core/Input'
-// import { withStyles } from '@material-ui/core/styles';
-// import PropTypes from 'prop-types';
 import Card from '@material-ui/core/Card';
+import Grid from '@material-ui/core/Grid';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-//import { FormControlLabel } from '@material-ui/core';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 
 class DeviceForm extends Component {
-
+  units = ['mA', 'uA', 'nA'];
   state = {
-    currLevel: 0,
+    currLevel: 1,
+    unit: 'mA',
     stepSize: 1,
-    unit: "mA"
+    stepSizeLabel: 'mA',
+    stepSizeFieldStepSize: 1,
   };
+
+  stepSizeChangeHandler = (event) => {
+    const rawNewValue = event.target.value;
+    const precisionLength = !rawNewValue.includes('.') ? rawNewValue.length : 1;
+    let newValue = parseFloat(rawNewValue).toPrecision(precisionLength);
+    let newStepSizeFieldStepSize = this.state.stepSizeFieldStepSize;
+    
+    if (newValue <= 1) {
+      const newValueString = newValue.toString();
+      const valueLastNumber = parseInt(newValueString.substr(newValueString.length - 1), 10);
+      const valueString = this.state.stepSize.toString();
+      const stepSizeLastNumber = parseInt(valueString.substr(valueString.length - 1), 10);
+
+      if (valueLastNumber <= 0) {
+        const decimalLength = valueString.includes('.') ? valueString.split('.').pop().length : 0;
+        newValue = parseFloat(this.state.stepSize - this.state.stepSize/10).toPrecision(1);
+        if (newValue < 0.000001) {
+          newValue = this.state.stepSize;
+        } else {
+          newStepSizeFieldStepSize = 1/Math.pow(10, decimalLength + 1);
+        }
+      } else if (valueLastNumber === 1 && stepSizeLastNumber === 9) {
+        newStepSizeFieldStepSize = this.state.stepSizeFieldStepSize * 10;
+      }
+    }
+
+    this.setState({
+      stepSize: newValue,
+      stepSizeFieldStepSize: newStepSizeFieldStepSize,
+      stepSizeLabel: this.computeStepSizeLabel(newValue),
+    });
+  }
+
+  computeStepSizeLabel = (value) => {
+    if (value >= 1) {
+      return 'mA';
+    } else if (value < 1 && value >= 0.001) {
+      return 'mA ≙ ' + (value * 1000).toString() + 'uA';
+    } else if (value < 0.001 && value >= 0.000001) {
+      return 'mA ≙ ' + (value * 1000000).toString() + 'nA';
+    } else {
+      return 'number too small'
+    }
+  }
+
+  currLevelChangeHandler = (event) => {
+    const rawNewValue = event.target.value;
+    const precisionLength = rawNewValue.length - 1;
+    let newValue = parseFloat(rawNewValue).toPrecision(precisionLength < 1 ? 1 : precisionLength);
+
+    let newUnit = this.state.unit;
+    let newCurrLevel = this.state.currLevel;
+
+    if (newValue <= 0) {
+      const index = this.units.indexOf(this.state.unit);
+      if (index < this.units.length - 1) {
+        newCurrLevel = 999;
+        newUnit = this.units[index + 1];
+      } else {
+        if (newValue < 0) {
+          newCurrLevel = 1;
+          newUnit = this.units[0];
+        } else {
+          newCurrLevel = 0;
+        }
+      }
+    } else if (newValue >= 1000) {
+      const index = this.units.indexOf(this.state.unit);
+      if (index > 0) {
+        newCurrLevel = 1;
+        newUnit = this.units[index - 1];
+      }
+    } else {
+      newCurrLevel = newValue;
+    }
+
+    this.setState({
+      currLevel: newCurrLevel,
+      unit: newUnit,
+    });
+  }
+
   render() {
     const {
       device,
       connect,
       disconnect,
-      classes,
     } = this.props;
 
     const {
@@ -36,11 +113,6 @@ class DeviceForm extends Component {
       connected,
       linkedDevice,
     } = device;
-
-    const radioOnChangeHandler = (event) => {
-      const value = event.target.value;
-      console.log(value);
-    };
 
     return (
       <div>
@@ -58,51 +130,39 @@ class DeviceForm extends Component {
             <Typography variant="title" component="h5">
               linked device: {(linkedDevice && linkedDevice.name) || 'No linked device'}
             </Typography>
-            <TextField type="number"
-              label="current level"
-              //defaultValue="0" 
-              InputProps={{ inputProps: { min: "0", max: "100", step: this.state.stepSize } }}
-              value={this.state.currLevel}
-              onChange={(e) => { this.setState({ currLevel: e.target.value }) }}
-            >
-            </TextField>
-            <TextField type="number"
-              label="step"
-              defaultValue="1"
-              InputProps={{ inputProps: { min: "0", max: "12", step: "1" } }}
-              //value={this.state.stepSize}
-              onChange={(e) => {
-                this.setState({ stepSize: e.target.value || 1 });
-                console.log(e);
-              }}
-            >
-            </TextField>
-            <FormControl component="fieldset">
-              <FormLabel component="legend">
-                unit
-                </FormLabel>
-              <RadioGroup
-                aria-label="unit"
-                style={{ display: 'flex', flexDirection: 'row' }}
-                value={this.state.unit}
-                onChange={radioOnChangeHandler}
-              >
-                <FormControlLabel
-                  value="mA"
-                  control={<Radio color="primary" />}
-                  label="mA"
-                />
-                <FormControlLabel
-                  value="uA"
-                  control={<Radio color="primary" />}
-                  label="uA"
-                />
-                <FormControlLabel
-                  value="nA"
-                  control={<Radio color="primary" />}
-                  label="nA"
-                />
-              </RadioGroup>
+            <FormControl>
+              <Grid container spacing={8} alignItems="flex-end">
+                <Grid item>
+                  <FormLabel>current level</FormLabel>
+                  <TextField
+                    type='number'
+                    inputProps={{
+                      step: this.state.stepSize
+                    }}
+                    value={this.state.currLevel}
+                    onChange={this.currLevelChangeHandler}
+                  />
+                </Grid>
+                <Grid item>
+                  <span>{this.state.unit}</span>
+                </Grid>
+              </Grid>
+              <Grid container spacing={8} alignItems="flex-end">
+                <Grid item>
+                  <FormLabel>step</FormLabel>
+                  <TextField
+                    type='number'
+                    inputProps={{
+                      step: this.state.stepSizeFieldStepSize
+                    }}
+                    value={this.state.stepSize}
+                    onChange={this.stepSizeChangeHandler}
+                  />
+                </Grid>
+                <Grid item>
+                  <span>{this.state.stepSizeLabel}</span>
+                </Grid>
+              </Grid>
             </FormControl>
           </CardContent>
           <CardActions>
