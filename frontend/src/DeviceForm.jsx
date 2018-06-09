@@ -16,31 +16,36 @@ class DeviceForm extends Component {
     unit: 'mA',
     stepSize: 1,
     stepSizeLabel: 'mA',
+    stepSizeCoefficient: 1,
     stepSizeFieldStepSize: 1,
   };
 
   stepSizeChangeHandler = (event) => {
+    const {
+      stepSize,
+      stepSizeFieldStepSize,
+    } = this.state;
+
     const rawNewValue = event.target.value;
-    const precisionLength = !rawNewValue.includes('.') ? rawNewValue.length : 1;
-    let newValue = parseFloat(rawNewValue).toPrecision(precisionLength);
-    let newStepSizeFieldStepSize = this.state.stepSizeFieldStepSize;
+    let newValue = Number(parseFloat(rawNewValue).toFixed(this.decimalPlaces(stepSize) + 1));
+    let newStepSizeFieldStepSize = stepSizeFieldStepSize;
     
     if (newValue <= 1) {
       const newValueString = newValue.toString();
       const valueLastNumber = parseInt(newValueString.substr(newValueString.length - 1), 10);
-      const valueString = this.state.stepSize.toString();
+      const valueString = stepSize.toString();
       const stepSizeLastNumber = parseInt(valueString.substr(valueString.length - 1), 10);
 
       if (valueLastNumber <= 0) {
         const decimalLength = valueString.includes('.') ? valueString.split('.').pop().length : 0;
-        newValue = parseFloat(this.state.stepSize - this.state.stepSize/10).toPrecision(1);
+        newValue = parseFloat(stepSize - stepSize/10).toPrecision(1);
         if (newValue < 0.000001) {
-          newValue = this.state.stepSize;
+          newValue = stepSize;
         } else {
           newStepSizeFieldStepSize = 1/Math.pow(10, decimalLength + 1);
         }
       } else if (valueLastNumber === 1 && stepSizeLastNumber === 9) {
-        newStepSizeFieldStepSize = this.state.stepSizeFieldStepSize * 10;
+        newStepSizeFieldStepSize = stepSizeFieldStepSize * 10;
       }
     }
 
@@ -64,43 +69,89 @@ class DeviceForm extends Component {
   }
 
   currLevelChangeHandler = (event) => {
+    /////////////////////////////////////////////////////////////////
+    // LOGIC:
+    //   minimum allowed number 0
+    //
+    //   set new number to event target value
+    //   if new number is smaller than current number:
+    //     if current number minus step smaller or equal to 0:
+    //       set new number to 0
+    //     else if new number smaller than 1 and greater than 0:
+    //       if current unit is not nano amp:
+    //         multiply new number by 1000
+    //         multiply current step size by 1000
+    //         set new unit to next smaller unit
+    //       else:
+    //         set new number to 0
+    //   else if new number is greater than current number:
+    //     if new number is greater or equal than 1000
+    //       if current unit is not milli amp:
+    //         divide new number by 1000
+    //         divide current step size by 1000
+    //         set new unit to next bigger unit
+    //       else:
+    //         set new number to 1000
+    //
+    //   set new number to state
+    /////////////////////////////////////////////////////////////////
+    const {
+      currLevel,
+      unit,
+      stepSize,
+      stepSizeCoefficient,
+    } = this.state;
+
     const rawNewValue = event.target.value;
-    const precisionLength = rawNewValue.length - 1;
-    let newValue = parseFloat(rawNewValue).toPrecision(precisionLength < 1 ? 1 : precisionLength);
+    let newValue = Number(parseFloat(rawNewValue).toFixed(this.decimalPlaces(stepSize) + 1));
 
-    let newUnit = this.state.unit;
-    let newCurrLevel = this.state.currLevel;
+    let newStepSizeCoefficient = stepSizeCoefficient;
+    let newUnit = unit;
 
-    if (newValue <= 0) {
-      const index = this.units.indexOf(this.state.unit);
-      if (index < this.units.length - 1) {
-        newCurrLevel = 999;
-        newUnit = this.units[index + 1];
-      } else {
-        if (newValue < 0) {
-          newCurrLevel = 1;
-          newUnit = this.units[0];
+    if (newValue < currLevel) {
+      if (newValue <= 0) {
+        newValue = 0;
+      } else if (newValue < 1 && newValue > 0) {
+        if (unit !== this.units[this.units.length - 1]) {
+          newValue = newValue * 1000;
+          newStepSizeCoefficient = stepSizeCoefficient * 1000;
+          newUnit = this.units[this.units.indexOf(unit) + 1];
         } else {
-          newCurrLevel = 0;
+          newValue = 0;
         }
       }
-    } else if (newValue >= 1000) {
-      const index = this.units.indexOf(this.state.unit);
-      if (index > 0) {
-        newCurrLevel = 1;
-        newUnit = this.units[index - 1];
+    } else if (newValue > currLevel) {
+      if (newValue >= 1000) {
+        if (unit !== this.units[0]) {
+          newValue = newValue / 1000;
+          newStepSizeCoefficient = stepSizeCoefficient / 1000;
+          newUnit = this.units[this.units.indexOf(unit) - 1];
+        } else {
+          newValue = 1000;
+        }
       }
-    } else {
-      newCurrLevel = newValue;
     }
 
     this.setState({
-      currLevel: newCurrLevel,
+      currLevel: newValue,
       unit: newUnit,
+      stepSizeCoefficient: newStepSizeCoefficient,
     });
   }
 
-  render() {
+  decimalPlaces = (number) => {
+    var match = ('' + number).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+    if (!match) return 0;
+    return Math.max(
+      0,
+      // Number of digits right of decimal point.
+      (match[1] ? match[1].length : 0)
+      // Adjust for scientific notation.
+      - (match[2] ? +match[2] : 0)
+    );
+  }
+
+  render = () => {
     const {
       device,
       connect,
@@ -135,9 +186,10 @@ class DeviceForm extends Component {
                 <Grid item>
                   <FormLabel>current level</FormLabel>
                   <TextField
+                    id={`device${address}CurrentLevel`}
                     type='number'
                     inputProps={{
-                      step: this.state.stepSize
+                      step: this.state.stepSize * this.state.stepSizeCoefficient
                     }}
                     value={this.state.currLevel}
                     onChange={this.currLevelChangeHandler}
@@ -153,7 +205,8 @@ class DeviceForm extends Component {
                   <TextField
                     type='number'
                     inputProps={{
-                      step: this.state.stepSizeFieldStepSize
+                      step: this.state.stepSizeFieldStepSize,
+                      value: this.state.stepSize,
                     }}
                     value={this.state.stepSize}
                     onChange={this.stepSizeChangeHandler}
