@@ -69,32 +69,6 @@ class DeviceForm extends Component {
   }
 
   currLevelChangeHandler = (event) => {
-    /////////////////////////////////////////////////////////////////
-    // LOGIC:
-    //   minimum allowed number 0
-    //
-    //   set new number to event target value
-    //   if new number is smaller than current number:
-    //     if current number minus step smaller or equal to 0:
-    //       set new number to 0
-    //     else if new number smaller than 1 and greater than 0:
-    //       if current unit is not nano amp:
-    //         multiply new number by 1000
-    //         multiply current step size by 1000
-    //         set new unit to next smaller unit
-    //       else:
-    //         set new number to 0
-    //   else if new number is greater than current number:
-    //     if new number is greater or equal than 1000
-    //       if current unit is not milli amp:
-    //         divide new number by 1000
-    //         divide current step size by 1000
-    //         set new unit to next bigger unit
-    //       else:
-    //         set new number to 1000
-    //
-    //   set new number to state
-    /////////////////////////////////////////////////////////////////
     const {
       currLevel,
       unit,
@@ -189,7 +163,8 @@ class DeviceForm extends Component {
                     id={`device${address}CurrentLevel`}
                     type='number'
                     inputProps={{
-                      step: this.state.stepSize * this.state.stepSizeCoefficient
+                      step: this.state.stepSize * this.state.stepSizeCoefficient,
+                      min: 0,
                     }}
                     value={this.state.currLevel}
                     onChange={this.currLevelChangeHandler}
@@ -206,7 +181,7 @@ class DeviceForm extends Component {
                     type='number'
                     inputProps={{
                       step: this.state.stepSizeFieldStepSize,
-                      value: this.state.stepSize,
+                      min: 0,
                     }}
                     value={this.state.stepSize}
                     onChange={this.stepSizeChangeHandler}
