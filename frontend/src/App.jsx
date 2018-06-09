@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import BACKEND_API from './apiConfig';
-import DeviceAdder from './DeviceAdder';
-import DeviceFormContainer from './DeviceFormContainer';
+import DeviceAdder from './components/DeviceAdder';
+import DeviceFormContainer from './components/DeviceFormContainer';
 import './App.css';
 
 class App extends Component {
