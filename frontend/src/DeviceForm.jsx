@@ -70,7 +70,6 @@ class DeviceForm extends Component {
 
   currLevelChangeHandler = (event) => {
     const {
-      currLevel,
       unit,
       stepSize,
       stepSizeCoefficient,
@@ -82,27 +81,22 @@ class DeviceForm extends Component {
     let newStepSizeCoefficient = stepSizeCoefficient;
     let newUnit = unit;
 
-    if (newValue < currLevel) {
-      if (newValue <= 0) {
+    while (newValue < 1 && newValue > 0) {
+      if (unit !== this.units[this.units.length - 1]) {
+        newValue *= 1000;
+        newStepSizeCoefficient *= 1000;
+        newUnit = this.units[this.units.indexOf(newUnit) + 1];
+      } else {
         newValue = 0;
-      } else if (newValue < 1 && newValue > 0) {
-        if (unit !== this.units[this.units.length - 1]) {
-          newValue = newValue * 1000;
-          newStepSizeCoefficient = stepSizeCoefficient * 1000;
-          newUnit = this.units[this.units.indexOf(unit) + 1];
-        } else {
-          newValue = 0;
-        }
       }
-    } else if (newValue > currLevel) {
-      if (newValue >= 1000) {
-        if (unit !== this.units[0]) {
-          newValue = newValue / 1000;
-          newStepSizeCoefficient = stepSizeCoefficient / 1000;
-          newUnit = this.units[this.units.indexOf(unit) - 1];
-        } else {
-          newValue = 1000;
-        }
+    }
+    while (newValue >= 1000) {
+      if (unit !== this.units[0]) {
+        newValue /= 1000;
+        newStepSizeCoefficient /= 1000;
+        newUnit = this.units[this.units.indexOf(newUnit) - 1];
+      } else {
+        newValue = 1000;
       }
     }
 
