@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import openSocket from 'socket.io-client';
 import BACKEND_API from './apiConfig';
 import DeviceAdder from './components/DeviceAdder';
 import DeviceFormContainer from './components/DeviceFormContainer';
 import './App.css';
 
 class App extends Component {
+  socket = null;
   state = {
     hasError: false,
     errorMsg: '',
@@ -21,6 +23,8 @@ class App extends Component {
   };
 
   componentWillMount() {
+    this.socket = openSocket(`${BACKEND_API}/nanoamp`);
+
     this.getDevices();
     this.getDefaultDeviceNames();
   }
@@ -164,6 +168,7 @@ class App extends Component {
           defaultDevices={this.state.defaultDeviceNames}
         />
         <DeviceFormContainer
+          socket={this.socket}
           devices={this.state.devices}
           connect={this.connect}
           disconnect={this.disconnect}

@@ -17,18 +17,24 @@ class DeviceForm extends Component {
     stepSize: 1,
     stepSizeLabel: 'mA',
     stepSizeCoefficient: 1,
-    stepSizeFieldStepSize: 1,
+    stepSizeFieldStep: 1,
   };
+
+  sendStepSize = () => {
+    const { currLevel, unit } = this.state;
+    const { socket } = this.props;
+    socket && socket.emit('current_level', { currLevel, unit });
+  }
 
   stepSizeChangeHandler = (event) => {
     const {
       stepSize,
-      stepSizeFieldStepSize,
+      stepSizeFieldStep,
     } = this.state;
 
     const rawNewValue = event.target.value;
     let newValue = Number(parseFloat(rawNewValue).toFixed(this.decimalPlaces(stepSize) + 1));
-    let newStepSizeFieldStepSize = stepSizeFieldStepSize;
+    let newStepSizeFieldStep = stepSizeFieldStep;
     
     if (newValue <= 1) {
       const newValueString = newValue.toString();
@@ -42,17 +48,19 @@ class DeviceForm extends Component {
         if (newValue < 0.000001) {
           newValue = stepSize;
         } else {
-          newStepSizeFieldStepSize = 1/Math.pow(10, decimalLength + 1);
+          newStepSizeFieldStep = 1/Math.pow(10, decimalLength + 1);
         }
       } else if (valueLastNumber === 1 && stepSizeLastNumber === 9) {
-        newStepSizeFieldStepSize = stepSizeFieldStepSize * 10;
+        newStepSizeFieldStep = stepSizeFieldStep * 10;
       }
     }
 
     this.setState({
       stepSize: newValue,
-      stepSizeFieldStepSize: newStepSizeFieldStepSize,
+      stepSizeFieldStep: newStepSizeFieldStep,
       stepSizeLabel: this.computeStepSizeLabel(newValue),
+    }, () => {
+      this.sendStepSize();
     });
   }
 
@@ -104,6 +112,8 @@ class DeviceForm extends Component {
       currLevel: newValue,
       unit: newUnit,
       stepSizeCoefficient: newStepSizeCoefficient,
+    }, () => {
+      this.sendStepSize();
     });
   }
 
@@ -174,7 +184,7 @@ class DeviceForm extends Component {
                   <TextField
                     type='number'
                     inputProps={{
-                      step: this.state.stepSizeFieldStepSize,
+                      step: this.state.stepSizeFieldStep,
                       min: 0,
                     }}
                     value={this.state.stepSize}

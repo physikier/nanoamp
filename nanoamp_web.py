@@ -1,7 +1,10 @@
 from flask import Flask, request, jsonify, abort
+from flask_cors import CORS
+from flask_socketio import SocketIO, Namespace, emit
 from HardwareBoard import HardwareBoard
 
 app = Flask(__name__, static_folder='frontend/build', static_url_path='')
+
 hardware_boards = {}
 
 default_device_names = {
@@ -12,6 +15,10 @@ default_device_names = {
     'ASRL16::INSTR': 'Left coil Z',
     'ASRL18::INSTR': 'Right coil Z',
 }
+
+class NanoampWebApp(Namespace):
+    def on_current_level(self, data):
+        print(data)
 
 @app.route("/get-default-device-names", methods=['GET'])
 def get_default_device_names():
@@ -72,4 +79,9 @@ def disconnect():
         return 'No device with this address ' + visa_address, 400
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # app.run(debug=True)
+    CORS(app)
+    app.config['DEBUG'] = True
+    socketio = SocketIO(app)
+    socketio.on_namespace(NanoampWebApp('/nanoamp'))
+    socketio.run(app)
