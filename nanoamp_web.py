@@ -3,6 +3,9 @@ from flask_cors import CORS
 from flask_socketio import SocketIO, Namespace, emit
 from HardwareBoard import HardwareBoard
 
+# import matplotlib.pyplot as plt, mpld3
+import random
+
 app = Flask(__name__, static_folder='frontend/build', static_url_path='')
 
 hardware_boards = {}
@@ -78,10 +81,18 @@ def disconnect():
     else:
         return 'No device with this address ' + visa_address, 400
 
+# @app.route("/build_plot", methods=['POST'])
+# def build_plot():
+#     x = range(100)
+#     y = [a * 2 + random.randint(-20, 20) for a in x]
+#     fig = plt.plot(x,y)
+#     return mpld3.fig_to_html(fig)
+
+
 if __name__ == "__main__":
     # app.run(debug=True)
     CORS(app)
     app.config['DEBUG'] = True
-    socketio = SocketIO(app)
+    socketio = SocketIO(app, logger=False, engineio_logger=False)
     socketio.on_namespace(NanoampWebApp('/nanoamp'))
     socketio.run(app)

@@ -4,6 +4,7 @@ import openSocket from 'socket.io-client';
 import BACKEND_API from './apiConfig';
 import DeviceAdder from './components/DeviceAdder';
 import DeviceFormContainer from './components/DeviceFormContainer';
+import Calibrator from './components/Calibrator';
 import './App.css';
 
 class App extends Component {
@@ -24,7 +25,6 @@ class App extends Component {
 
   componentWillMount() {
     this.socket = openSocket(`${BACKEND_API}/nanoamp`);
-
     this.getDevices();
     this.getDefaultDeviceNames();
   }
@@ -154,6 +154,9 @@ class App extends Component {
     });
   }
 
+  buildPlot = () => {
+     axios.get(BACKEND_API + '/build_plot')
+  }
   render() {
     return (
       <div className="App">
@@ -173,6 +176,11 @@ class App extends Component {
           connect={this.connect}
           disconnect={this.disconnect}
         />
+        <Calibrator
+        />
+        <div>
+        {this.buildPlot}
+        </div>
       </div>
     );
   }
