@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import openSocket from 'socket.io-client';
+import socketio from 'socket.io-client';
 import BACKEND_API from './apiConfig';
 import DeviceAdder from './components/DeviceAdder';
 import DeviceFormContainer from './components/DeviceFormContainer';
@@ -21,10 +21,14 @@ class App extends Component {
     // }
     devices: [],
     defaultDeviceNames: {},
+    defaultCalibratorDeviceNames: {}
   };
 
   componentWillMount() {
-    this.socket = openSocket(`${BACKEND_API}/nanoamp`);
+    this.socket = socketio(`${BACKEND_API}`);
+    this.socket.on('chart_data', (data) => {
+      console.log('chart_data: ', data);
+    });
     this.getDevices();
     this.getDefaultDeviceNames();
   }
@@ -41,6 +45,19 @@ class App extends Component {
       this.showError(errorMsg || error.toString());
     });
 
+  }
+
+  getDefaultCalibratorDeviceNames = () => {
+    axios.get(BACKEND_API + '/get-default-calibrator-device-names')
+    .then(response => {
+      if (response.data) {
+        this.setState({ defaultCalibratorDeviceNames: response.data });
+      }
+    })
+    .catch(error => {
+      const errorMsg = error && error.response && error.response.data;
+      this.showError(errorMsg || error.toString());
+    });
   }
 
   getDevices = () => {
@@ -177,6 +194,7 @@ class App extends Component {
           disconnect={this.disconnect}
         />
         <Calibrator
+          addDevice={this.addDevice}
         />
         <div>
         {this.buildPlot}
@@ -187,3 +205,5 @@ class App extends Component {
 }
 
 export default App;
+
+

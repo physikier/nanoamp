@@ -2,11 +2,16 @@ from flask import Flask, request, jsonify, abort
 from flask_cors import CORS
 from flask_socketio import SocketIO, Namespace, emit
 from HardwareBoard import HardwareBoard
+from time import sleep
+import signal
+import time
+import sys
 
 # import matplotlib.pyplot as plt, mpld3
 import random
 
 app = Flask(__name__, static_folder='frontend/build', static_url_path='')
+socketio = SocketIO(app)
 
 hardware_boards = {}
 
@@ -19,13 +24,18 @@ default_device_names = {
     'ASRL18::INSTR': 'Right coil Z',
 }
 
-class NanoampWebApp(Namespace):
-    def on_current_level(self, data):
-        print(data)
+default_calibrator_device_names = {
+    'TCPIP0::129.69.46.235::inst0::INSTR': 'Tektronix AFG3252',
+    'ASRL3::INSTR' : 'SRS PID SIM960'
+}
 
 @app.route("/get-default-device-names", methods=['GET'])
 def get_default_device_names():
     return jsonify(default_device_names)
+
+@app.route("/get_default-calibrator-device-names", methods=['GET'])
+def get_default_calibrator_device_names():
+    return jsonify(default_calibrator_device_names)
 
 @app.route("/get-devices", methods=['GET'])
 def get_devices():
@@ -88,11 +98,26 @@ def disconnect():
 #     fig = plt.plot(x,y)
 #     return mpld3.fig_to_html(fig)
 
+def exit_gracefully(signum, frame):
+    try:
+        if input('\nReally quit? (y/n) ').lower().startswith('y'):
+            sys.exit(1)
+        else:
+            socketio.emit('chart_data', { 'number': 42 })
+    except KeyboardInterrupt:
+        print('Ok ok, quitting')
+        sys.exit(1)
 
-if __name__ == "__main__":
-    # app.run(debug=True)
+    # restore the exit gracefully handler here    
+    signal.signal(signal.SIGINT, exit_gracefully)
+
+
+if __name__ == '__main__':
     CORS(app)
     app.config['DEBUG'] = True
+
     socketio = SocketIO(app, logger=False, engineio_logger=False)
-    socketio.on_namespace(NanoampWebApp('/nanoamp'))
+
+    signal.signal(signal.SIGINT, exit_gracefully)
+
     socketio.run(app)

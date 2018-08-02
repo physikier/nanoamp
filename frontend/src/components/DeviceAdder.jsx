@@ -68,6 +68,7 @@ class DeviceAdder extends Component {
         }));
     }
 
+    
     getAddressSuggestions = (device) => {
         const { defaultDevices } = this.props;
         if (!defaultDevices) {
