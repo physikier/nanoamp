@@ -4,3 +4,4 @@ ui/build/
 wheels/
 
 .vs/
+.vscode/settings.json
