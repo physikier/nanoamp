@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from flask import Flask, request, jsonify, abort
 from flask_cors import CORS
 from flask_socketio import SocketIO, Namespace, emit
