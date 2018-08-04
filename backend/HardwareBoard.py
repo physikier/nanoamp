@@ -1,9 +1,10 @@
 from hardware.arduino_leonardo import ArduinoLeonardo
 
 class HardwareBoard():
-	def __init__(self, visa_address, name):
+	def __init__(self, visa_address, name='', mocked=False):
 		self.visa_address = visa_address
-		self.name = name or ''
+		self.name = name
+		self.mocked = mocked
 
 	def connect(self):
 		try:

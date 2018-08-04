@@ -1,19 +1,14 @@
 #!/usr/bin/env python3
 
-from flask import Flask, request, jsonify, abort
+from flask import Flask, request, jsonify
 from flask_cors import CORS
-from flask_socketio import SocketIO, Namespace, emit
+from flask_socketio import SocketIO, emit
 from HardwareBoard import HardwareBoard
 from time import sleep
-import signal
-import time
-import sys
-
-# import matplotlib.pyplot as plt, mpld3
-import random
+import threading
 
 app = Flask(__name__, static_folder='frontend/build', static_url_path='')
-socketio = SocketIO(app)
+socket_io = SocketIO(app)
 
 hardware_boards = {}
 
@@ -70,12 +65,30 @@ def remove_device():
     del hardware_boards[visa_address]
     return jsonify({ 'address': visa_address })
 
+
+class SocketTest(object):
+    def __init__(self, interval=1):
+        self.interval = interval
+        thread = threading.Thread(target=self.run, args=())
+        thread.daemon = True
+        thread.start()
+
+    def run(self):
+        for i in range(10):
+            print(f'emit socket sample data: {i + 1}')
+            socket_io.emit('chart_data', { 'number': 42 })
+            sleep(self.interval)
+
+
 @app.route("/connect", methods=['POST'])
 def connect():
     visa_address = request.get_json().get('address')
     hardware_board = hardware_boards.get(visa_address)
     if not hardware_board:
         return 'No device with this address ' + visa_address, 400
+
+    instance = SocketTest(1)
+    print('i was here')
 
     hardware_board.connect()
     if hardware_board.is_connected():
@@ -93,33 +106,11 @@ def disconnect():
     else:
         return 'No device with this address ' + visa_address, 400
 
-# @app.route("/build_plot", methods=['POST'])
-# def build_plot():
-#     x = range(100)
-#     y = [a * 2 + random.randint(-20, 20) for a in x]
-#     fig = plt.plot(x,y)
-#     return mpld3.fig_to_html(fig)
-
-def exit_gracefully(signum, frame):
-    try:
-        if input('\nReally quit? (y/n) ').lower().startswith('y'):
-            sys.exit(1)
-        else:
-            socketio.emit('chart_data', { 'number': 42 })
-    except KeyboardInterrupt:
-        print('Ok ok, quitting')
-        sys.exit(1)
-
-    # restore the exit gracefully handler here    
-    signal.signal(signal.SIGINT, exit_gracefully)
-
 
 if __name__ == '__main__':
     CORS(app)
     app.config['DEBUG'] = True
 
-    socketio = SocketIO(app, logger=False, engineio_logger=False)
+    socket_io = SocketIO(app, logger=False, engineio_logger=False)
 
-    signal.signal(signal.SIGINT, exit_gracefully)
-
-    socketio.run(app)
+    socket_io.run(app)

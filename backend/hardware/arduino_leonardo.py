@@ -4,7 +4,6 @@ import visa
 
 
 class ArduinoLeonardo():
-
 	 # --------------------------------------------------------------------------
 	def __init__(self, visa_address='ASRL10::INSTR'):
 		self.visa_address = visa_address
