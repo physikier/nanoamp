@@ -74,10 +74,6 @@ class SocketTest(object):
         thread = threading.Thread(target=self.run, args=())
         thread.daemon = True
         thread.start()
-    
-    async def echo(websocket, path):
-        async for message in websocket:
-            await websocket.send(message)
 
     def run(self):
         asyncio.get_event_loop().run_until_complete(
