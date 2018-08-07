@@ -2,13 +2,15 @@
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from flask_socketio import SocketIO, emit
+
 from HardwareBoard import HardwareBoard
-from time import sleep
+
 import threading
+from time import sleep
+import websockets
+import asyncio
 
 app = Flask(__name__, static_folder='frontend/build', static_url_path='')
-socket_io = SocketIO(app)
 
 hardware_boards = {}
 
@@ -72,8 +74,16 @@ class SocketTest(object):
         thread = threading.Thread(target=self.run, args=())
         thread.daemon = True
         thread.start()
+    
+    async def echo(websocket, path):
+        async for message in websocket:
+            await websocket.send(message)
 
     def run(self):
+        asyncio.get_event_loop().run_until_complete(
+            websockets.serve(self.echo, 'localhost', 8765))
+        asyncio.get_event_loop().run_forever()
+
         for i in range(10):
             print(f'emit socket sample data: {i + 1}')
             socket_io.emit('chart_data', { 'number': 42 })
@@ -109,8 +119,4 @@ def disconnect():
 
 if __name__ == '__main__':
     CORS(app)
-    app.config['DEBUG'] = True
-
-    socket_io = SocketIO(app, logger=False, engineio_logger=False)
-
-    socket_io.run(app)
+    app.run(debug=True)
