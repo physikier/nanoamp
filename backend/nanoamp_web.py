@@ -2,15 +2,21 @@
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-
+from flask_socketio import SocketIO, emit
+from threading import Lock
 from HardwareBoard import HardwareBoard
 
-import threading
-from time import sleep
-import websockets
-import asyncio
+# Set this variable to "threading", "eventlet" or "gevent" to test the
+# different async modes, or leave it set to None for the application to choose
+# the best option based on installed packages.
+async_mode = None
 
 app = Flask(__name__, static_folder='frontend/build', static_url_path='')
+CORS(app)
+socketio = SocketIO(app, async_mode=async_mode)
+
+thread = None
+thread_lock = Lock()
 
 hardware_boards = {}
 
@@ -68,22 +74,12 @@ def remove_device():
     return jsonify({ 'address': visa_address })
 
 
-class SocketTest(object):
-    def __init__(self, interval=1):
-        self.interval = interval
-        thread = threading.Thread(target=self.run, args=())
-        thread.daemon = True
-        thread.start()
-
-    def run(self):
-        asyncio.get_event_loop().run_until_complete(
-            websockets.serve(self.echo, 'localhost', 8765))
-        asyncio.get_event_loop().run_forever()
-
-        for i in range(10):
-            print(f'emit socket sample data: {i + 1}')
-            socket_io.emit('chart_data', { 'number': 42 })
-            sleep(self.interval)
+def background_thread():
+    """Example of how to send server generated events to clients."""
+    for i in range(1000):
+        print(f'emit data from background {i + 1}')
+        socketio.emit('chart_data', {'data': i + 1})
+        socketio.sleep(0.001)
 
 
 @app.route("/connect", methods=['POST'])
@@ -93,8 +89,11 @@ def connect():
     if not hardware_board:
         return 'No device with this address ' + visa_address, 400
 
-    instance = SocketTest(1)
-    print('i was here')
+    global thread
+    with thread_lock:
+        if thread is None:
+            thread = socketio.start_background_task(target=background_thread)
+    socketio.emit('chart_data', {'data': 'from main thread'})
 
     hardware_board.connect()
     if hardware_board.is_connected():
@@ -114,5 +113,4 @@ def disconnect():
 
 
 if __name__ == '__main__':
-    CORS(app)
-    app.run(debug=True)
+    socketio.run(app, debug=True)

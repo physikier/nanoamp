@@ -9,11 +9,12 @@ flask-cors = "*"
 flask-socketio = "*"
 serial = "*"
 pyvisa = "*"
-pylint = "*"
 eventlet = "*"
 websockets = "*"
+gevent = "*"
 
 [dev-packages]
+pylint = "*"
 
 [requires]
 python_version = "3.6"
