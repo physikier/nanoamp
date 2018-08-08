@@ -90,10 +90,8 @@ def connect():
     if not hardware_board:
         return 'No device with this address ' + visa_address, 400
 
-    global thread
     with thread_lock:
-        if thread is None:
-            thread = socketio.start_background_task(target=background_thread)
+        socketio.start_background_task(target=background_thread)
     socketio.emit('chart_data', {'data': 'from main thread'})
 
     hardware_board.connect()
