@@ -6,6 +6,7 @@ import DeviceAdder from './components/DeviceAdder';
 import DeviceFormContainer from './components/DeviceFormContainer';
 import Calibrator from './components/Calibrator';
 import './App.css';
+import Plot from 'react-plotly.js';
 
 class App extends Component {
   socket = null;
@@ -21,13 +22,23 @@ class App extends Component {
     // }
     devices: [],
     defaultDeviceNames: {},
-    defaultCalibratorDeviceNames: {}
+    defaultCalibratorDeviceNames: {},
+    chartData: [{
+      x: [],
+      y: [],
+      type: 'scatter',
+      mode: 'lines+points',
+      marker: { color: 'red' },
+    }]
   };
 
   componentWillMount() {
     this.socket = socketio(`${BACKEND_API}`);
     this.socket.on('chart_data', (data) => {
-      console.log('chart_data: ', data);
+      const newChartLine = this.state.chartData[0];
+      newChartLine.x = [...newChartLine.x, data.x];
+      newChartLine.y = [...newChartLine.y, data.y];
+      this.setState({ chartData: [newChartLine] });
     });
     this.getDevices();
     this.getDefaultDeviceNames();
@@ -35,49 +46,49 @@ class App extends Component {
 
   getDefaultDeviceNames = () => {
     axios.get(BACKEND_API + '/get-default-device-names')
-    .then(response => {
-      if (response.data) {
-        this.setState({ defaultDeviceNames: response.data });
-      }
-    })
-    .catch(error => {
-      const errorMsg = error && error.response && error.response.data;
-      this.showError(errorMsg || error.toString());
-    });
+      .then(response => {
+        if (response.data) {
+          this.setState({ defaultDeviceNames: response.data });
+        }
+      })
+      .catch(error => {
+        const errorMsg = error && error.response && error.response.data;
+        this.showError(errorMsg || error.toString());
+      });
 
   }
 
   getDefaultCalibratorDeviceNames = () => {
     axios.get(BACKEND_API + '/get-default-calibrator-device-names')
-    .then(response => {
-      if (response.data) {
-        this.setState({ defaultCalibratorDeviceNames: response.data });
-      }
-    })
-    .catch(error => {
-      const errorMsg = error && error.response && error.response.data;
-      this.showError(errorMsg || error.toString());
-    });
+      .then(response => {
+        if (response.data) {
+          this.setState({ defaultCalibratorDeviceNames: response.data });
+        }
+      })
+      .catch(error => {
+        const errorMsg = error && error.response && error.response.data;
+        this.showError(errorMsg || error.toString());
+      });
   }
 
   getDevices = () => {
     axios.get(BACKEND_API + '/get-devices')
-    .then(response => {
-      if (response.data && response.data.length > 0) {
-        response.data.forEach(device => {
-          this.state.devices.push({
-            name: device.name || 'Default name',
-            address: device.address || 'ERR_NO_ADDRESS',
-            connected: device.connected || false,
+      .then(response => {
+        if (response.data && response.data.length > 0) {
+          response.data.forEach(device => {
+            this.state.devices.push({
+              name: device.name || 'Default name',
+              address: device.address || 'ERR_NO_ADDRESS',
+              connected: device.connected || false,
+            });
           });
-        });
-        this.setState({ devices: this.state.devices });
-      }
-    })
-    .catch(error => {
-      const errorMsg = error && error.response && error.response.data;
-      this.showError(errorMsg || error.toString());
-    });
+          this.setState({ devices: this.state.devices });
+        }
+      })
+      .catch(error => {
+        const errorMsg = error && error.response && error.response.data;
+        this.showError(errorMsg || error.toString());
+      });
   }
 
   addDevice = (deviceName, deviceAddress, linkedDeviceAddress = null) => {
@@ -91,30 +102,30 @@ class App extends Component {
       address: deviceAddress,
       name: deviceName,
     })
-    .then(response => {
-      const device = {
-        name: deviceName,
-        address: deviceAddress,
-        connected: false, 
-      };
+      .then(response => {
+        const device = {
+          name: deviceName,
+          address: deviceAddress,
+          connected: false,
+        };
 
-      if (linkedDeviceAddress) {
-        const linkedDevice = this.state.devices.filter(device => {
-          return device.address === linkedDeviceAddress
-        });
-        if (linkedDevice.length > 0) {
-          device.linkedDevice = linkedDevice[0];
-          linkedDevice[0].linkedDevice = device;
+        if (linkedDeviceAddress) {
+          const linkedDevice = this.state.devices.filter(device => {
+            return device.address === linkedDeviceAddress
+          });
+          if (linkedDevice.length > 0) {
+            device.linkedDevice = linkedDevice[0];
+            linkedDevice[0].linkedDevice = device;
+          }
         }
-      }
 
-      this.state.devices.push(device);
-      this.setState({ devices: this.state.devices });
-    })
-    .catch(error => {
-      const errorMsg = error && error.response && error.response.data;
-      this.showError(errorMsg || error.toString());
-    });
+        this.state.devices.push(device);
+        this.setState({ devices: this.state.devices });
+      })
+      .catch(error => {
+        const errorMsg = error && error.response && error.response.data;
+        this.showError(errorMsg || error.toString());
+      });
   }
 
   connect = deviceAddress => {
@@ -127,14 +138,14 @@ class App extends Component {
     axios.post(BACKEND_API + '/connect', {
       address: deviceAddress,
     })
-    .then(response => {
-      device[0].connected = true;
-      this.setState({ devices: this.state.devices });
-    })
-    .catch(error => {
-      const errorMsg = error && error.response && error.response.data;
-      this.showError(errorMsg || error.toString());
-    });
+      .then(response => {
+        device[0].connected = true;
+        this.setState({ devices: this.state.devices });
+      })
+      .catch(error => {
+        const errorMsg = error && error.response && error.response.data;
+        this.showError(errorMsg || error.toString());
+      });
   }
 
   disconnect = deviceAddress => {
@@ -147,14 +158,14 @@ class App extends Component {
     axios.post(BACKEND_API + '/disconnect', {
       address: deviceAddress,
     })
-    .then(response => {
-      device[0].connected = false;
-      this.setState({ devices: this.state.devices });
-    })
-    .catch(error => {
-      const errorMsg = error && error.response && error.response.data;
-      this.showError(errorMsg || error.toString());
-    });
+      .then(response => {
+        device[0].connected = false;
+        this.setState({ devices: this.state.devices });
+      })
+      .catch(error => {
+        const errorMsg = error && error.response && error.response.data;
+        this.showError(errorMsg || error.toString());
+      });
   }
 
   showError = errorMsg => {
@@ -172,7 +183,7 @@ class App extends Component {
   }
 
   buildPlot = () => {
-     axios.get(BACKEND_API + '/build_plot')
+    axios.get(BACKEND_API + '/build_plot')
   }
   render() {
     return (
@@ -193,11 +204,15 @@ class App extends Component {
           connect={this.connect}
           disconnect={this.disconnect}
         />
+        <Plot
+          data={this.state.chartData}
+          layout={{ width: 620, height: 440, title: 'Calibration Data' }}
+        />
         <Calibrator
           addDevice={this.addDevice}
         />
         <div>
-        {this.buildPlot}
+          {this.buildPlot}
         </div>
       </div>
     );

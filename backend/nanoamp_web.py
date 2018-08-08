@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 from threading import Lock
+import random
 from HardwareBoard import HardwareBoard
 
 # Set this variable to "threading", "eventlet" or "gevent" to test the
@@ -76,9 +77,13 @@ def remove_device():
 
 def background_thread():
     """Example of how to send server generated events to clients."""
-    for i in range(1000):
-        socketio.emit('chart_data', {'data': i + 1})
-        socketio.sleep(0.001)
+    for i in range(50):
+        chart_point = {
+            'x': i,
+            'y': random.randint(0, 5)
+        }
+        socketio.emit('chart_data', chart_point)
+        socketio.sleep(0.1)
         
     print(f'############### data emitted 1000 times from background')
 
@@ -92,7 +97,6 @@ def connect():
 
     with thread_lock:
         socketio.start_background_task(target=background_thread)
-    socketio.emit('chart_data', {'data': 'from main thread'})
 
     hardware_board.connect()
     if hardware_board.is_connected():

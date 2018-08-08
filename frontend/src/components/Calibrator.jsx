@@ -8,7 +8,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextFieldAutocomplete from './TextFieldAutocomplete';
-import Plot from 'react-plotly.js';
 import './DeviceAdder.css';
 
 
@@ -155,8 +154,8 @@ class Calibrator extends Component {
                                 />
                             </Grid>
                         </Grid>
-                </DialogContent>
-                <DialogActions>
+                    </DialogContent>
+                    <DialogActions>
                         <Button onClick={this.closeDialog} color="primary">
                             Cancel
                         </Button>
@@ -164,19 +163,6 @@ class Calibrator extends Component {
                             Add Devices
                         </Button>
                     </DialogActions>
-                <Plot
-                data={[
-                {
-                    x: [1, 2, 3],
-                    y: [2, 6, 3],
-                    type: 'scatter',
-                    mode: 'lines+points',
-                    marker: {color: 'red'},
-                },
-                {type: 'bar', x: [1, 2, 3], y: [2, 5, 3]},
-                ]}
-                layout={ {width: 620, height: 440, title: 'Calibration Data'} }
-                />
                 </Dialog>
             </div>
         );
