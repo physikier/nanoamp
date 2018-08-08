@@ -12,11 +12,13 @@ import './DeviceAdder.css';
 
 
 
-class Calibrator extends Component {
+class CalibratorDeviceAdder extends Component {
     state = {
         open: false,
-        deviceFunctionGenerator: '',
-        devicePIDController: ''
+        functionGeneratorName: '',
+        functionGeneratorAdress: '',
+        PIDControllerName: '',
+        PIDControllerAdress: ''
     };
 
     openDialog = () => {
@@ -34,13 +36,13 @@ class Calibrator extends Component {
     addDevice = () => {
         const { addDevice } = this.props;
         if (addDevice) {
-            if (this.state.leftDeviceAddress) {
-                const leftDeviceName = this.state.leftDeviceName || 'Default left device name';
-                addDevice(leftDeviceName, this.state.leftDeviceAddress, this.state.rightDeviceAddress);
+            if (this.state.functionGeneratorAdress) {
+                const functionGeneratorName = this.state.functionGeneratorName || 'Default left device name';
+                addDevice(functionGeneratorName, this.state.functionGeneratorAdress, null);
             }
-            if (this.state.rightDeviceAddress) {
-                const rightDeviceName = this.state.rightDeviceName || 'Default right device name';
-                addDevice(rightDeviceName, this.state.rightDeviceAddress, this.state.leftDeviceAddress);
+            if (this.state.PIDControllerAdress) {
+                const PIDControllerName = this.state.PIDControllerName || 'Default right device name';
+                addDevice(PIDControllerName, this.state.PIDControllerAdress, null);
             }
         }
         this.setState({open: false});
@@ -120,18 +122,18 @@ class Calibrator extends Component {
                             test
                         </DialogContentText>
                         <Typography variant="subheading" style={{ marginTop: 25 }}>
-                            Left Device:
+                            PID Controller:
                         </Typography>
                         <Grid container spacing={32}>
                             <Grid item xs={7}>
                                 <TextFieldAutocomplete
                                     fullWidth
                                     value={{
-                                        value: this.state.leftDeviceName,
-                                        label: this.state.leftDeviceName
+                                        value: this.state.PIDControllerName,
+                                        label: this.state.PIDControllerName
                                     }}
                                     onChange={(elem) => this.setState({
-                                        leftDeviceName: (elem && elem.value) || ''
+                                        PIDControllerName: (elem && elem.value) || ''
                                     })}
                                     placeholder="Choose a device name"
                                     label="Name"
@@ -142,11 +144,46 @@ class Calibrator extends Component {
                                 <TextFieldAutocomplete
                                     fullWidth
                                     value={{
-                                        value: this.state.leftDeviceAddress,
-                                        label: this.state.leftDeviceAddress
+                                        value: this.state.PIDControllerAdress,
+                                        label: this.state.PIDControllerAdress
                                     }}
                                     onChange={(elem) => this.setState({
-                                        leftDeviceAddress: (elem && elem.value) || ''
+                                        PIDControllerAdress: (elem && elem.value) || ''
+                                    })}
+                                    placeholder="Insert Device Address"
+                                    label="Address"
+                                    suggestions={this.getAddressSuggestions()}
+                                />
+                            </Grid>
+                        </Grid>
+                        <Typography variant="subheading"  style={{ marginTop: 25 }}>
+                            Function Generator:
+                        </Typography>
+                        <Grid container spacing={32}>
+                            <Grid item xs={7}>
+                                <TextFieldAutocomplete
+                                    fullWidth
+                                    value={{
+                                        value: this.state.functionGeneratorName,
+                                        label: this.state.functionGeneratorName
+                                    }}
+                                    onChange={(elem) => this.setState({
+                                        functionGeneratorName: (elem && elem.value) || ''
+                                    })}
+                                    placeholder="Choose a device name"
+                                    label="Name"
+                                    suggestions={this.getNameSuggestions()}
+                                />
+                            </Grid>
+                            <Grid item xs={5}>
+                                <TextFieldAutocomplete
+                                    fullWidth
+                                    value={{
+                                        value: this.state.functionGeneratorAdress,
+                                        label: this.state.functionGeneratorAdress
+                                    }}
+                                    onChange={(elem) => this.setState({
+                                        functionGeneratorAdress: (elem && elem.value) || ''
                                     })}
                                     placeholder="Insert Device Address"
                                     label="Address"
@@ -170,4 +207,4 @@ class Calibrator extends Component {
     }
 }
 
-export default Calibrator;
+export default CalibratorDeviceAdder;

@@ -4,7 +4,7 @@ import socketio from 'socket.io-client';
 import BACKEND_API from './apiConfig';
 import DeviceAdder from './components/DeviceAdder';
 import DeviceFormContainer from './components/DeviceFormContainer';
-import Calibrator from './components/Calibrator';
+import CalibratorDeviceAdder from './components/CalibratorDeviceAdder';
 import './App.css';
 import Plot from 'react-plotly.js';
 
@@ -21,6 +21,7 @@ class App extends Component {
     //   linkedDevice: {object to linked device}
     // }
     devices: [],
+    devicesCalibrator: [],
     defaultDeviceNames: {},
     defaultCalibratorDeviceNames: {},
     chartData: [{
@@ -42,6 +43,7 @@ class App extends Component {
     });
     this.getDevices();
     this.getDefaultDeviceNames();
+    this.getDefaultCalibratorDeviceNames();
   }
 
   getDefaultDeviceNames = () => {
@@ -208,8 +210,10 @@ class App extends Component {
           data={this.state.chartData}
           layout={{ width: 620, height: 440, title: 'Calibration Data' }}
         />
-        <Calibrator
+        <CalibratorDeviceAdder
           addDevice={this.addDevice}
+          devices={this.state.devicesCalibrator}
+          defaultDevices={this.state.defaultCalibratorDeviceNames}
         />
         <div>
           {this.buildPlot}
