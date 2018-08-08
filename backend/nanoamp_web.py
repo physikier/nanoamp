@@ -77,9 +77,10 @@ def remove_device():
 def background_thread():
     """Example of how to send server generated events to clients."""
     for i in range(1000):
-        print(f'emit data from background {i + 1}')
         socketio.emit('chart_data', {'data': i + 1})
         socketio.sleep(0.001)
+        
+    print(f'############### data emitted 1000 times from background')
 
 
 @app.route("/connect", methods=['POST'])
