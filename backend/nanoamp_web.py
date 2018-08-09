@@ -39,7 +39,7 @@ default_calibrator_device_names = {
 def get_default_device_names():
     return jsonify(default_device_names)
 
-@app.route("/get_default-calibrator-device-names", methods=['GET'])
+@app.route("/get-default-calibrator-device-names", methods=['GET'])
 def get_default_calibrator_device_names():
     return jsonify(default_calibrator_device_names)
 
@@ -76,7 +76,6 @@ def remove_device():
 
 
 def background_thread():
-    """Example of how to send server generated events to clients."""
     previous_number = 5
     for i in range(200):
         y_axis = previous_number + random.randint(0, 4) - 2
@@ -87,8 +86,6 @@ def background_thread():
         socketio.emit('chart_data', chart_point)
         previous_number = y_axis
         socketio.sleep(0.1)
-        
-    print(f'############### data emitted 1000 times from background')
 
 
 @app.route("/connect", methods=['POST'])
