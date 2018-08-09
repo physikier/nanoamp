@@ -36,8 +36,8 @@ class App extends Component {
     this.socket = socketio(`${BACKEND_API}`);
     this.socket.on('chart_data', (data) => {
       const newChartLine = this.state.chartData[0];
-      newChartLine.x = [...newChartLine.x, data.x];
-      newChartLine.y = [...newChartLine.y, data.y];
+      newChartLine.x = [...newChartLine.x, data.x].slice(-50);
+      newChartLine.y = [...newChartLine.y, data.y].slice(-50);
       this.setState({ chartData: [newChartLine] });
     });
     this.getDevices();

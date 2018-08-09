@@ -77,12 +77,15 @@ def remove_device():
 
 def background_thread():
     """Example of how to send server generated events to clients."""
-    for i in range(50):
+    previous_number = 5
+    for i in range(200):
+        y_axis = previous_number + random.randint(0, 4) - 2
         chart_point = {
             'x': i,
-            'y': random.randint(0, 5)
+            'y': y_axis
         }
         socketio.emit('chart_data', chart_point)
+        previous_number = y_axis
         socketio.sleep(0.1)
         
     print(f'############### data emitted 1000 times from background')
